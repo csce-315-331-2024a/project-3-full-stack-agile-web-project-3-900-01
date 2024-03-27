@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'RevsDjango.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "csce331_900_01_db",
+        'USER': "csce331_900_01_user",
+        'PASSWORD': "TokPToEy",
+        'HOST': "csce-315-db.engr.tamu.edu",
+        'PORT': 5432,
     }
 }
 
