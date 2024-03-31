@@ -13,9 +13,32 @@
         <div class="main">
             <h1> Orders </h1>
             {% for buttonData in buttonData %}
-                <button class="menuButton" id="{{ buttonData.description }}_button">{{ buttonData.description }}</button>
+                <button class="menuButton" id="{{buttonData.description}}_button"
+                    onClick="menuButtonClick('{{buttonData.description}}', '{{buttonData.price}}',
+                    '{{buttonData.id}}')">
+                    {{buttonData.description}} | {{buttonData.price}}
+                </button>
             {% endfor %}
         </div>
     </div>
+
+    <!-- Employee Password Authentication -->
+    <script>
+        function menuButtonClick(description, price, id) {
+            fetch('{% url "add-item" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    'description': description,
+                    'price': price,
+                    'id': id
+                })
+            })
+            .then(response => response.json())
+        }
+    </script>
 </body>
 </html>
