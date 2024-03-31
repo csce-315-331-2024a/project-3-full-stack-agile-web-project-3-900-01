@@ -4,15 +4,19 @@ from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from django.db import connection
 
+# Global variables for tracking order information
 currentPrice = 0.0
 currentOrder = []
 
+
+# Class to store all information on a menu item
 class MenuItem:
     def __init__(self, description, price, id, category):
         self.description = description
         self.price = price
         self.id = id
         self.category = category
+
 
 # Initializes all the menu items buttons
 def orders(request):

@@ -18,15 +18,6 @@
 
 </head>
 <body>
-    <div class="container">
-        <div class="main">
-            <h1> Orders </h1>
-            {% for buttonData in buttonData %}
-                <button class="menuButton" id="{{buttonData.description}}_button"
-                    onClick="menuButtonClick('{{buttonData.description}}', '{{buttonData.price}}',
-                    '{{buttonData.id}}')">
-                    {{buttonData.description}} | {{buttonData.price}}
-                </button>
     <header>
         <div class="header-content">
             <div class="logo"><img src="{% static 'rev.png' %}" alt="logo"></div>
@@ -60,14 +51,16 @@
     <div class="menu_sections">
         <h2>Burgers</h2>
         <div class="box-container">
-            {% for button in categorized_buttons.Burgers %}
+            {% for button in categorizedButtons.Burgers %}
             <div class="box">
                 <div class="image-section">
                     <img src="{% static 'burger.png' %}" alt="burger" class="icon">
                 </div>
                 <div class="details-section">
-                    <div class="price">{{ button.price }}</div>
-                    <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                    <div class="price">{{button.price}}</div>
+                    <button class="menuButton" id="{{ button.description }}_button"
+                    onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                    '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                 </div>
             </div>
             {% endfor %}
@@ -76,14 +69,16 @@
         <div class="section" id="baskets_section">
             <h2>Baskets</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Baskets %}
+                {% for button in categorizedButtons.Baskets %}
                 <div class="box">
                     <div class="image-section">
                         <img src="{% static 'basket.jpeg' %}" alt="basket" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">{{ button.price }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price">{{button.price}}</div>
+                        <button class="menuButton" id="{{ button.description }}_button"
+                        onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                        '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -94,14 +89,16 @@
         <div class="section" id="sandwiches_section">
             <h2>Sandwiches</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Sandwiches %}
+                {% for button in categorizedButtons.Sandwiches %}
                 <div class="box">
                     <div class="image-section">
                         <img src="{% static 'sandwich.jpeg' %}" alt="sandwich" class="icon">
                     </div>
                     <div class="details-section">
                         <div class="price">{{ button.price }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" id="{{ button.description }}_button"
+                        onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                        '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -110,14 +107,16 @@
         <div class="section" id="shakes_section">
             <h2>Shakes</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Shakes %}
+                {% for button in categorizedButtons.Shakes %}
                 <div class="box">
                     <div class="image-section">
                         <img src="{% static 'shake.jpeg' %}" alt="shake" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">{{ button.price }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price">{{button.price}}</div>
+                        <button class="menuButton" id="{{ button.description }}_button"
+                        onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                        '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -127,14 +126,16 @@
         <div class="section" id="beverages_section">
             <h2>Beverages</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Beverages %}
+                {% for button in categorizedButtons.Beverages %}
                 <div class="box">
                     <div class="image-section">
                         <img src="{% static 'beverage.jpeg' %}" alt="Beverages" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">{{ button.price }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price">{{button.price}}</div>
+                        <button class="menuButton" id="{{ button.description }}_button"
+                        onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                        '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -144,20 +145,21 @@
         <div class="section" id="sides_section">
             <h2>Sides</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Sides %}
+                {% for button in categorizedButtons.Sides %}
                 <div class="box">
                     <div class="image-section">
                         <img src="{% static 'sides.jpeg' %}" alt="Sides" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">{{ button.price }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price">{{button.price}}</div>
+                        <button class="menuButton" id="{{button.description}}_button"
+                        onClick="menuButtonClick('{{button.description}}', '{{button.price}}',
+                        '{{button.id}}', '{{button.category}}')">{{button.description}}</button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
-        
     </div>
     
     <div class="cart-window">
@@ -198,7 +200,7 @@
     
     <!-- Employee Password Authentication -->
     <script>
-        function menuButtonClick(description, price, id) {
+        function menuButtonClick(description, price, id, category) {
             fetch('{% url "add-item" %}', {
                 method: 'POST',
                 headers: {
@@ -208,7 +210,8 @@
                 body: JSON.stringify({
                     'description': description,
                     'price': price,
-                    'id': id
+                    'id': id,
+                    'category': category
                 })
             })
             .then(response => response.json())
