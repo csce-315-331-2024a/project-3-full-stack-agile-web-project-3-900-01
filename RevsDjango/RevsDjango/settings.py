@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'manager.apps.ManagerConfig',
     'menu.apps.MenuConfig',
     'orders.apps.OrdersConfig',
+    'menuboard.apps.MenuboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
