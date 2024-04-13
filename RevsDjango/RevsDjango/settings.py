@@ -72,7 +72,7 @@ ROOT_URLCONF = 'RevsDjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,12 +156,6 @@ django_heroku.settings(locals())
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Temporarily Localhost client id:
-# 467715639769-brr92jddem48vle1erheg811sgn900i4.apps.googleusercontent.com
-
-# Temporarily client secret:
-# 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
-
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -176,4 +170,5 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/manager'
+LOGIN_REDIRECT_URL = 'Revs-Employee-Screen'
+LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
