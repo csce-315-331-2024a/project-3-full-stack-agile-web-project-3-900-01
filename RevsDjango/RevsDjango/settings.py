@@ -34,23 +34,22 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'login.apps.LoginConfig',
-    'manager.apps.ManagerConfig',
-    'menu.apps.MenuConfig',
-    'orders.apps.OrdersConfig',
-    'menuboard.apps.MenuboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # The following apps are required for OAuth:
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'login.apps.LoginConfig',
+    'manager.apps.ManagerConfig',
+    'menu.apps.MenuConfig',
+    'orders.apps.OrdersConfig',
+    'menuboard.apps.MenuboardConfig',
 ]
 
 SITE_ID = 1
@@ -73,7 +72,7 @@ ROOT_URLCONF = 'RevsDjango.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
