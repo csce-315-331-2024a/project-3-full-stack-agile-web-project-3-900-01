@@ -43,9 +43,39 @@ def manager(request):
         return render(request, 'manager/manager.html', context)
 
 def restock(request):
-    return render(request, 'manager/restock.html')
+    with connection.cursor as cursor:
+        sqlCommand = "SLECT * FROM inventory WHERE (quantity_remaining::numeric / quantity_target::numeric) < 0.5;"
+        cursor.execute(sqlCommand)
+        cursorOutput = cursor.fetchall()
+
+        restockReport =[{'id': currentItem[0], 'description': currentItem[1],
+                       'quantity_remaining': currentItem[2], 'quantity_target': currentItem[3],}
+                       for currentItem in cursorOutput]
+    return render(request, 'manager/restock.html', restockReport)
 
 def excess(request):
+    startingDate = timezone.now().date()-timedelta(days=365)
+    endingDate = timezone.now().date()
+    startingDateForm = StartDateForm()
+    endingDateForm = EndDateForm()
+    if request.method == "POST":
+        if "submit_button" in request.POST:
+            startingDateForm = StartDateForm(request.POST)
+            endingDateForm = EndDateForm(request.POST)
+
+            # If the date is valid, extracts the selected date
+            if startingDateForm.is_valid():
+                startingDate = startingDateForm.cleaned_data['startDate']
+            if endingDateForm.is_valid():
+                endingDate = endingDateForm.cleaned_data['endDate']
+
+    excess_report = getExcessReport(startingDate, endingDate)
+
+    # Default option
+    context = {'excess_report': excess_report,
+                'StartDateForm': startingDateForm,
+                'EndDateForm': endingDateForm}
+
     return render(request, 'manager/excess.html')
 
 def productusage(request):
@@ -103,6 +133,23 @@ def getSalesReport(startDate, endDate=timezone.now().date()):
         
         return dataReport
 
+def getExcessReport(startDate, endDate=timezone.now().date()):
+    with connection.cursor() as cursor:
+        # Queries for all items within the year
+        sqlCommand = ("SELECT i.* FROM inventory i JOIN food_to_inventory fti ON i.id = fti.inventory_id " +
+                      "JOIN menu_items mi ON fti.food_item_id = mi.id JOIN order_breakout ob ON mi.id = ob.food_items JOIN orders o ON ob.order_id = o.id " +
+                      "WHERE (1.0 - (SUM(fti.quantity)::numeric / i.quantity_target::numeric)) * 100 < 10 AND o.order_time >= %s AND o.order_time <= %s " +
+                      "GROUP BY i.id HAVING SUM(fti.quantity) IS NOT NULL;")
+        cursor.execute(sqlCommand, [startDate, endDate])
+        cursorOutput = cursor.fetchall()
+
+        # Sorts and places all the items into the context
+        dataReport =[{'id': currentItem[0], 'Description': currentItem[1],
+                       'quantity_remaining': currentItem[2], 'quantity_target': currentItem[3]}
+                       for currentItem in cursorOutput]
+        
+        return dataReport
+    
 
 # Creates classes for date submissions
 class StartDateForm(forms.Form):
