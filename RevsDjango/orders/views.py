@@ -75,53 +75,73 @@ def orders(request):
 #         return JsonResponse({'cart_count': len(cart['ids']), 'total_price': totalPrice})
     
 #     return JsonResponse({'error': 'failed'}, status=400)
-def addItem(request):
+
+# def addItem(request):
+#     if request.method == 'POST':
+#         price = float(request.POST.get('price'))
+#         description = request.POST.get('description')
+
+#         # Retrieve the cart from the session, add new price to total, then update cart 
+#         cart = request.session.get('cart', {})
+#         cart[description] = cart.get(description, 0) + price
+#         request.session['cart'] = cart
+#         total_price = sum(cart.values())
+
+#         return JsonResponse({'cart_count': len(cart), 'total_price': total_price})
+    
+#     return JsonResponse({'error': 'failed'}, status=400)
+
+# This post request takes in price and id and returns cart_count and total_price
+def removeItem(request):
     if request.method == 'POST':
         price = float(request.POST.get('price'))
-        description = request.POST.get('description')
+        id = request.POST.get('id')
 
         # Retrieve the cart from the session, add new price to total, then update cart 
-        cart = request.session.get('cart', {})
-        cart[description] = cart.get(description, 0) + price
+        if 'cart' not in request.session:
+            request.session['cart'] = {'total_price': 0.0, 'ids': []}
+        cart = request.session.get('cart')
+        cart['total_price'] -= price
+        totalPrice = cart['total_price']
+        cart['ids'].remove(id)
         request.session['cart'] = cart
-        total_price = sum(cart.values())
 
-        return JsonResponse({'cart_count': len(cart), 'total_price': total_price})
+        return JsonResponse({'cart_count': len(cart['ids']), 'total_price': totalPrice})
     
     return JsonResponse({'error': 'failed'}, status=400)
 
-# def checkout(request):
-#     if request.method == 'POST':
+def checkout(request):
+    if request.method == 'POST':
 
-#         # Defaults
-#         customerId = 1
-#         employeeId = 1111
-#         orderTime = timezone.now()
+        # Defaults
+        customerId = 1
+        employeeId = 1111
+        orderTime = timezone.now()
 
-#         cart = request.session.get('cart')
-#         totalPrice = cart['total_price']
+        cart = request.session.get('cart')
+        totalPrice = cart['total_price']
 
-#         # Loops until the order is processed fully in the database successfully
-#         while (True):
-#             with transaction.atomic():
-#                 try:
-#                     orderId = getNewOrderID()
-#                     updateOrders(customerId, employeeId, totalPrice, orderTime, orderId)
-#                     for currentId in cart['ids']:
-#                         ingredientIds = getUsedInventoryItems(orderId, currentId)
-#                         updateInventory(ingredientIds)
+        # Loops until the order is processed fully in the database successfully
+        while (True):
+            with transaction.atomic():
+                try:
+                    orderId = getNewOrderID()
+                    updateOrders(customerId, employeeId, totalPrice, orderTime, orderId)
+                    for currentId in cart['ids']:
+                        ingredientIds = getUsedInventoryItems(orderId, currentId)
+                        updateInventory(ingredientIds)
 
-#                     break
+                    break
 
-#                 # Waits for 0.1 seconds before retrying order submission
-#                 except IntegrityError:
-#                     time.sleep(0.1)
+                # Waits for 0.1 seconds before retrying order submission
+                except IntegrityError:
+                    time.sleep(0.1)
 
-#         # Reset price
-#         del request.session['cart']
+        # Reset price
+        del request.session['cart']
 
-#         messages.success(request, 'Success')
-#         return redirect('Revs-Order-Screen')
+        messages.success(request, 'Success')
+        return redirect('Revs-Order-Screen')
 
 def checkout(request):
     if request.method == 'POST':
