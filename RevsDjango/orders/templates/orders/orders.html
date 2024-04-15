@@ -99,14 +99,11 @@
             {% for button in categorized_buttons.Burgers %}
             <div class="box">
                 <div class="image-section">
-                    <!-- <img src="{% static 'burger.png' %}" alt="burger" class="icon"> -->
-                    <!-- <img src="{% static 'images/'|add:button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon"> -->
-                    <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
-
+                    <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
                 </div>
                 <div class="details-section">
-                    <div class="price" >${{ button.price|floatformat:"2" }}</div>
-                    <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                    <div class="price">${{ button.price|floatformat:"2" }}</div>
+                    <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}" data-id="{{button.id}}" id="{{ button.id }}_button"> {{ button.description }}</button>
                 </div>
             </div>
             {% endfor %}
@@ -119,11 +116,13 @@
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'basket.jpeg' %}" alt="basket" class="icon"> -->
-                        <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
+                        <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
                         <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}"
+                            data-id="{{button.id}}" id="{{ button.description }}_button">
+                            {{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -138,11 +137,13 @@
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'sandwich.jpeg' %}" alt="sandwich" class="icon"> -->
-                        <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
+                        <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
                         <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}"
+                            data-id="{{button.id}}" id="{{ button.description }}_button">
+                            {{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -155,12 +156,14 @@
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'shake.jpeg' %}" alt="shake" class="icon"> -->
-                        <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
+                        <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
 
                     </div>
                     <div class="details-section">
                         <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}"
+                            data-id="{{button.id}}" id="{{ button.description }}_button">
+                            {{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -174,12 +177,14 @@
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'beverage.jpeg' %}" alt="Beverages" class="icon"> -->
-                        <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
+                        <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
 
                     </div>
                     <div class="details-section">
                         <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}"
+                            data-id="{{button.id}}" id="{{ button.description }}_button">
+                            {{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -193,11 +198,13 @@
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'sides.jpeg' %}" alt="Sides" class="icon"> -->
-                        <img src="{% static button.description|lower %}.jpeg" alt="{{ button.description }}" class="icon">
+                        <img src="{% static button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
                         <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <button class="menuButton" data-price="{{button.price}}" data-description="{{button.description}}"
+                            data-id="{{button.id}}" id="{{ button.description }}_button">
+                            {{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -248,8 +255,8 @@
             var sections = document.querySelectorAll('h2');
             
             menuButtons.forEach(function(button) {
-                var buttonDescription = button.textContent.toLowerCase();
-                if (buttonDescription.includes(searchText)) {
+                var buttonId = button.getAttribute('id').split('_')[0]; // Extract id from button id
+                if (buttonId.includes(searchText)) {
                     button.closest('.box').style.display = 'block';
                 } else {
                     button.closest('.box').style.display = 'none';
@@ -299,16 +306,16 @@
 
     
 
-<script>
+<!-- <script>
     $(document).ready(function() {
         // Function to handle button clicks
         $('.menuButton').click(function() {
-            var description = $(this).attr('id').replace('_button', ''); // Extract description from button id
+            var id = $(this).attr('id').split('_')[0]; // Extract id from button id
             var imageUrl = $(this).closest('.box').find('img').attr('src'); // Extract image source
             var price = parseFloat($(this).closest('.details-section').find('.price').text().replace('$', '')); // Get price from the button's parent container
 
             // Check if item already exists in the cart
-            var existingItem = $('.sidebar').find('.sidebar-item[data-description="' + description + '"]');
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
             if (existingItem.length > 0) {
                 // If item already exists, update its quantity and price
                 var currentQuantity = parseInt(existingItem.find('.quantity').text());
@@ -317,9 +324,9 @@
                 existingItem.find('.price').text('$' + totalPrice.toFixed(2));
             } else {
                 // If item doesn't exist, append it to the sidebar
-                var menuItemHtml = '<div class="sidebar-item" data-description="' + description + '">' +
-                                        '<img src="' + imageUrl + '" alt="' + description + '" class="sidebar-icon">' +
-                                        '<span>' + description + '</span>' +
+                var menuItemHtml = '<div class="sidebar-item" data-id="' + id + '">' +
+                                        '<img src="' + imageUrl + '" alt="' + id + '" class="sidebar-icon">' +
+                                        '<span>' + id + '</span>' +
                                         '<button class="decrease-quantity">-</button>' +
                                         '<span class="quantity">1</span>' +
                                         '<button class="increase-quantity">+</button>' +
@@ -334,7 +341,7 @@
                 type: "POST",
                 url: "{% url 'addItem' %}", // URL for adding to cart
                 data: {
-                    'description': description,
+                    'id': id,
                     'price': price,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
@@ -353,8 +360,8 @@
 
         // Function to handle removing an item from the cart
         $(document).on('click', '.remove-item', function() {
-            var description = $(this).closest('.sidebar-item').data('description');
-            var existingItem = $('.sidebar').find('.sidebar-item[data-description="' + description + '"]');
+            var id = $(this).closest('.sidebar-item').data('id');
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
             var currentQuantity = parseInt(existingItem.find('.quantity').text());
             if (currentQuantity > 1) {
                 // If quantity is more than 1, decrease quantity and update price
@@ -395,12 +402,144 @@
             $('#cart-count').text(currentCount - 1);
         });
     });
+</script> -->
+<script>
+    $(document).ready(function() {
+    // Function to handle button clicks
+        $('.menuButton').click(function() {
+            var id = $(this).data('id'); // Extract id from button data
+            var description = $(this).data('description'); // Extract description from button data
+            var imageUrl = $(this).closest('.box').find('img').attr('src'); // Extract image source
+            var buttonHtml = '<div class="sidebar-item"><img src="' + imageUrl + '" alt="' + description + '" class="sidebar-icon"><span>' + description + '</span></div>';
+            var price = $(this).data('price');
+
+            // Check if item already exists in the cart
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
+            if (existingItem.length > 0) {
+                // If item already exists, update its quantity and price
+                var currentQuantity = parseInt(existingItem.find('.quantity').text());
+                existingItem.find('.quantity').text(currentQuantity + 1);
+                var totalPrice = parseFloat(existingItem.find('.price').text().replace('$', '')) + price;
+                existingItem.find('.price').text('$' + totalPrice.toFixed(2));
+            } else {
+                // If item doesn't exist, append it to the sidebar
+                var menuItemHtml = '<div class="sidebar-item" data-id="' + id + '">' +
+                    '<img src="' + imageUrl + '" alt="' + description + '" class="sidebar-icon">' +
+                    '<span>' + description + '</span>' +
+                    '<button class="decrease-quantity">-</button>' +
+                    '<span class="quantity">1</span>' +
+                    '<button class="increase-quantity">+</button>' +
+                    '<span class="price">$' + price.toFixed(2) + '</span>' +
+                    '<button class="remove-item">Remove</button>' +
+                    '</div>';
+                $('.sidebar').append(menuItemHtml);
+            }
+
+            // Send an AJAX request to add the item to the cart
+            $.ajax({
+                type: "POST",
+                url: "{% url 'addItem' %}", // URL for adding to cart
+                data: {
+                    'id': id,
+                    'price': price,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Update cart count
+                    $('#cart-count').text(response.cart_count);
+                    // Update current price
+                    $('#total-price').text(response.total_price.toFixed(2));
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors if any
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        // Function to handle removing an item from the cart
+        $(document).on('click', '.remove-item', function() {
+            var id = $(this).closest('.sidebar-item').data('id');
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
+            var currentQuantity = parseInt(existingItem.find('.quantity').text());
+            if (currentQuantity > 1) {
+                // If quantity is more than 1, decrease quantity and update price
+                existingItem.find('.quantity').text(currentQuantity - 1);
+                var price = parseFloat(existingItem.find('.price').text().replace('$', ''));
+                var totalPrice = price * (currentQuantity - 1);
+                existingItem.find('.price').text('$' + totalPrice.toFixed(2));
+            } else {
+                // If quantity is 1, remove the item from the sidebar
+                existingItem.remove();
+            }
+            // Optionally, you can also send an AJAX request to remove the item from the cart and update the total price
+        });
+
+        // Function to handle checkout button click
+        $('#checkout-btn').click(function() {
+            // Transfer items to the order summary container in transaction.html
+            $('.sidebar-item').each(function() {
+                var imageSrc = $(this).find('img').attr('src');
+                var itemName = $(this).find('span:first').text();
+                var itemQuantity = parseInt($(this).find('.quantity').text());
+                var itemPrice = parseFloat($(this).find('.price').text().replace('$', '')); // Get price from sidebar item
+                var itemHtml = '<li class="order-item"><img src="' + imageSrc + '" alt="' + itemName + '" class="item-image">' + itemName + ' x' + itemQuantity + '<span>$' + itemPrice.toFixed(2) + '</span></li>';
+                $('.order-items').append(itemHtml);
+            });
+            // Navigate to the transaction page
+            window.location.href = "{% url 'transaction' %}";
+        });
+
+        // Function to handle increasing the quantity of an item
+        $(document).on('click', '.increase-quantity', function() {
+            var id = $(this).closest('.sidebar-item').data('id');
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
+            var currentQuantity = parseInt(existingItem.find('.quantity').text());
+            // Increase quantity and update price
+            existingItem.find('.quantity').text(currentQuantity + 1);
+            var price = parseFloat(existingItem.find('.price').text().replace('$', ''));
+            var totalPrice = price * (currentQuantity + 1);
+            existingItem.find('.price').text('$' + totalPrice.toFixed(2));
+
+            // Optionally, you can also send an AJAX request to update the item quantity in the backend
+        });
+
+        // Function to handle decreasing the quantity of an item
+        $(document).on('click', '.decrease-quantity', function() {
+            var id = $(this).closest('.sidebar-item').data('id');
+            var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
+            var currentQuantity = parseInt(existingItem.find('.quantity').text());
+            if (currentQuantity > 1) {
+                // If quantity is more than 1, decrease quantity and update price
+                existingItem.find('.quantity').text(currentQuantity - 1);
+                var price = parseFloat(existingItem.find('.price').text().replace('$', ''));
+                var totalPrice = price * (currentQuantity - 1);
+                existingItem.find('.price').text('$' + totalPrice.toFixed(2));
+
+                // Optionally, you can also send an AJAX request to update the item quantity in the backend
+            }
+        });
+
+        // This part of the script handles updating the cart count when an item is added or removed
+        $('.menuButton').click(function() {
+            var currentCount = parseInt($('#cart-count').text());
+            $('#cart-count').text(currentCount + 1);
+        });
+
+        $(document).on('click', '.remove-item', function() {
+            var currentCount = parseInt($('#cart-count').text());
+            $('#cart-count').text(currentCount - 1);
+        });
+    });
 </script>
+
+
+
 <script>
     // Function to handle decreasing the quantity of an item
 $(document).on('click', '.decrease-quantity', function() {
-    var description = $(this).closest('.sidebar-item').data('description');
-    var existingItem = $('.sidebar').find('.sidebar-item[data-description="' + description + '"]');
+    var id = $(this).closest('.sidebar-item').data('id');
+    var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
     var currentQuantity = parseInt(existingItem.find('.quantity').text());
     if (currentQuantity > 1) {
         // If quantity is more than 1, decrease quantity and update price
@@ -415,8 +554,8 @@ $(document).on('click', '.decrease-quantity', function() {
 
 // Function to handle increasing the quantity of an item
 $(document).on('click', '.increase-quantity', function() {
-    var description = $(this).closest('.sidebar-item').data('description');
-    var existingItem = $('.sidebar').find('.sidebar-item[data-description="' + description + '"]');
+    var id = $(this).closest('.sidebar-item').data('id');
+    var existingItem = $('.sidebar').find('.sidebar-item[data-id="' + id + '"]');
     var currentQuantity = parseInt(existingItem.find('.quantity').text());
     // Increase quantity and update price
     existingItem.find('.quantity').text(currentQuantity + 1);

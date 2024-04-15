@@ -28,7 +28,7 @@ def orders(request):
 
         request.session['menuItems'] = menuItems
 
-        # Categorize buttons based on their descriptions
+        # Categorize buttons based on their IDs instead of descriptions
         categorized_buttons = {
             'Burgers': [],
             'Baskets': [],
@@ -58,6 +58,27 @@ def orders(request):
         return render(request, 'orders/orders.html', context)
 
 
+def addItem(request):
+    if request.method == 'POST':
+        price = float(request.POST.get('price'))
+        id = request.POST.get('id')
+
+        # Retrieve the menu item description using its ID
+        menuItems = request.session.get('menuItems', {})
+        description = menuItems.get(id, {}).get('description', '')
+
+        # Retrieve the cart from the session, add new price to total, then update cart 
+        cart = request.session.get('cart', {})
+        cart[description] = cart.get(description, 0) + price
+        request.session['cart'] = cart
+        total_price = sum(cart.values())
+
+        return JsonResponse({'cart_count': len(cart), 'total_price': total_price})
+    
+    return JsonResponse({'error': 'failed'}, status=400)
+
+
+
 # def addItem(request):
 #     if request.method == 'POST':
 #         price = float(request.POST.get('price'))
@@ -75,20 +96,20 @@ def orders(request):
 #         return JsonResponse({'cart_count': len(cart['ids']), 'total_price': totalPrice})
     
 #     return JsonResponse({'error': 'failed'}, status=400)
-def addItem(request):
-    if request.method == 'POST':
-        price = float(request.POST.get('price'))
-        description = request.POST.get('description')
+# def addItem(request):
+#     if request.method == 'POST':
+#         price = float(request.POST.get('price'))
+#         description = request.POST.get('description')
 
-        # Retrieve the cart from the session, add new price to total, then update cart 
-        cart = request.session.get('cart', {})
-        cart[description] = cart.get(description, 0) + price
-        request.session['cart'] = cart
-        total_price = sum(cart.values())
+#         # Retrieve the cart from the session, add new price to total, then update cart 
+#         cart = request.session.get('cart', {})
+#         cart[description] = cart.get(description, 0) + price
+#         request.session['cart'] = cart
+#         total_price = sum(cart.values())
 
-        return JsonResponse({'cart_count': len(cart), 'total_price': total_price})
+#         return JsonResponse({'cart_count': len(cart), 'total_price': total_price})
     
-    return JsonResponse({'error': 'failed'}, status=400)
+#     return JsonResponse({'error': 'failed'}, status=400)
 
 # def checkout(request):
 #     if request.method == 'POST':
@@ -122,6 +143,8 @@ def addItem(request):
 
 #         messages.success(request, 'Success')
 #         return redirect('Revs-Order-Screen')
+    
+
 
 def checkout(request):
     if request.method == 'POST':
