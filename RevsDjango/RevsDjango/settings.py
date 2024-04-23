@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'menu.apps.MenuConfig',
     'orders.apps.OrdersConfig',
     'menuboard.apps.MenuboardConfig',
+    'cashier.apps.CashierConfig',
 ]
 
 SITE_ID = 1
