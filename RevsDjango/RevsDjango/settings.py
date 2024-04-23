@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'login.apps.LoginConfig',
     'manager.apps.ManagerConfig',
-    'menu.apps.MenuConfig',
     'orders.apps.OrdersConfig',
     'menuboard.apps.MenuboardConfig',
     'cashier.apps.CashierConfig',
