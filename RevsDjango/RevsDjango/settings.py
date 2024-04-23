@@ -14,6 +14,7 @@ from pathlib import Path
 import django_heroku
 import dj_database_url
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -169,6 +170,14 @@ SOCIALACCOUNT_PROVIDERS = {
         'OAUTH_PKCE_ENABLED': True,
     }
 }
+
+# Detect test mode
+if 'test' in sys.argv or 'test_coverage' in sys.argv:  # Covers standard test command and coverage test command
+    DATABASES['default'].update({
+        'NAME': 'test_db_name',
+        'USER': 'test_user',
+        'PASSWORD': 'test_password',
+    })
 
 LOGIN_REDIRECT_URL = 'Revs-Employee-Screen'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
