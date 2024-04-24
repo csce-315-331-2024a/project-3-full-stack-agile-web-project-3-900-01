@@ -170,6 +170,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'Revs-Employee-Screen'
+LOGIN_REDIRECT_URL = 'employee-redirect'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'login.adapters.MySocialAccountAdapter'
