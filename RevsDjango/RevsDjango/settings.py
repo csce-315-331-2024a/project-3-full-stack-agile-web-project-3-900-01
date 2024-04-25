@@ -102,6 +102,9 @@ DATABASES = {
         'PASSWORD': "TokPToEy",
         'HOST': "csce-315-db.engr.tamu.edu",
         'PORT': 5432,
+        'TEST': {
+            'MIRROR': 'default',
+        },
     }
 }
 
@@ -149,7 +152,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 django_heroku.settings(locals())
 
 # Default primary key field type
@@ -171,13 +174,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# Detect test mode
-if 'test' in sys.argv or 'test_coverage' in sys.argv:  # Covers standard test command and coverage test command
-    DATABASES['default'].update({
-        'NAME': 'test_db_name',
-        'USER': 'test_user',
-        'PASSWORD': 'test_password',
-    })
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = 'Revs-Employee-Screen'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
