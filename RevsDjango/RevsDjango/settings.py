@@ -14,6 +14,7 @@ from pathlib import Path
 import django_heroku
 import dj_database_url
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -102,6 +103,9 @@ DATABASES = {
         'PASSWORD': "TokPToEy",
         'HOST': "csce-315-db.engr.tamu.edu",
         'PORT': 5432,
+        'TEST': {
+            'MIRROR': 'default',
+        },
     }
 }
 
@@ -149,7 +153,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 django_heroku.settings(locals())
 
 # Default primary key field type
@@ -171,6 +175,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 LOGIN_REDIRECT_URL = 'employee-redirect'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
 SOCIALACCOUNT_LOGIN_ON_GET = True
