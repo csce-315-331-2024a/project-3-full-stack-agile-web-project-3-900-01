@@ -9,8 +9,8 @@ urlpatterns = [
     path('', views.orders, name='Revs-Cashier-Screen'),
     path('checkout/', views.checkout, name='checkout'),
     path('add/', views.addItem, name='addItem'),
-    path('transaction/', views.transaction_view, name='transaction'),
-    path('orders/', views.transaction_view, name='orders'),
-    path('getCartItems/', views.get_cart_items, name='getCartItems'),
-    path('login/', views.login_view, name='login'),
+    path('transaction/', views.transactionView, name='transaction'),
+    path('orders/', views.transactionView, name='orders'),
+    path('getCartItems/', views.getCartItems, name='getCartItems'),
+    path('login/', views.loginView, name='login'),
 ]

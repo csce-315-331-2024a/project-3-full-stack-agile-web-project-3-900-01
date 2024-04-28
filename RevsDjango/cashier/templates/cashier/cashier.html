@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cashier</title>
+    <title>Orders</title>
 
     <!-- Imports Django Button Interaction -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -12,9 +12,7 @@
     <!--  Stylesheet for the page -->
     <link rel="stylesheet" href="{% static 'cashier.css' %}">
 
-
     <script src="https://kit.fontawesome.com/066f56d2e6.js" crossorigin="anonymous"></script>
-
 
 </head>
 <body>
@@ -28,9 +26,10 @@
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <header>
-        <div class="header-content" id="google_translate_element">
-            <div class="logo"><img src="{% static 'rev.png' %}" alt="logo"></div>
-            <a id="menu" href="{% url 'Revs-Menuboard-Screen' %}" style="text-decoration: none;">Menu</a>
+        <div class="header-content">   
+            <a href="{% url 'Revs-Login-Screen' %}" class="logo">
+                <div class="logo"><img src="{% static 'rev.png' %}" alt="logo"></div>
+            </a>
             <a id="login" href="{% url 'Revs-Login-Screen' %}" style="text-decoration: none;">Login</a>
             <span id="help">Help</span>
             <!-- <img src="{% static 'R.png' %}" alt="cart" class="icon" id="sidebar">           -->
@@ -39,6 +38,7 @@
                 <img src="{% static 'R.png' %}" alt="cart" class="icon" id="sidebar"> 
                 <span id="cart-count" class="cart-count">0</span> <!-- This will show the count -->
             </div>
+            <div id="google_translate_element"></div>
         </div>
     </header>
 
@@ -59,17 +59,17 @@
                
             </table>
         </div>
-        <div class="menu-items">
+        <div class="menu-items readable">
         </div>
         <form method="post" action="{% url 'checkout' %}">
             {% csrf_token %}
-            <div class="checkout-btn-container">
-                <button type="submit" id="checkout-btn">Checkout</button> 
+            <div class="checkout-btn-container readable">
+                <button type="submit" aria-label="Click to checkout the order to payment" id="checkout-btn" class="readable">Checkout</button> 
             </div>
             
             
         </form>   
-        <button id="close-sidebar-btn"><i class="fa-solid fa-xmark"></i></button>
+        <button aria-label="Click to close Sidebar Button" id="close-sidebar-btn"><i class="fa-solid fa-xmark"></i></button>
     </div>
     
 
@@ -79,34 +79,36 @@
             <div class="search-bar"> <!-- Assuming this is your search bar -->
                 <input type="text" placeholder="Search here" id="searchInput">
             </div>
-            <span class="item" onclick="scrollToSection('All_section')">All</span>
-            <span class="item" onclick="scrollToSection('burgers_section')">Burgers</span>
-            <span class="item" onclick="scrollToSection('baskets_section')">Baskets</span>
-            <span class="item" onclick="scrollToSection('sandwiches_section')">Sandwiches</span>
-            <span class="item" onclick="scrollToSection('shakes_section')">Shakes</span>
-            <span class="item" onclick="scrollToSection('beverages_section')">Beverages</span>
-            <span class="item" onclick="scrollToSection('sides_section')">Sides</span>
+            <span class="item readable" onclick="scrollToSection('All_section')">All</span>
+            <span class="item readable" onclick="scrollToSection('burgers_section')">Burgers</span>
+            <span class="item readable" onclick="scrollToSection('baskets_section')">Baskets</span>
+            <span class="item readable" onclick="scrollToSection('sandwiches_section')">Sandwiches</span>
+            <span class="item readable" onclick="scrollToSection('shakes_section')">Shakes</span>
+            <span class="item readable" onclick="scrollToSection('beverages_section')">Beverages</span>
+            <span class="item readable" onclick="scrollToSection('sides_section')">Sides</span>
             
             
         </div>
         <div class="scroll-arrow"></div>
     </section>
     
-    <h3> Available Menu Items to Order </h3>
+    <h2> Available Menu Items to Order </h2>
     <div class="menu_sections">
         <h2>Burgers</h2>
         <div class="box-container">
-            {% for button in categorized_buttons.Burgers %}
+            {% for button in categorizedButtons.Burgers %}
             <div class="box">
-                <!-- <div class="image-section"> -->
+                <div class="image-section">
                     <!-- <img src="{% static 'burger.png' %}" alt="burger" class="icon"> -->
                     <!-- <img src="{% static 'images/'|add:button.description|add:'.jpeg' %}" alt="{{ button.description }}" class="icon"> -->
-                    <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                    <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
 
-                <!-- </div> -->
+                </div>
                 <div class="details-section">
-                    <div class="price" >${{ button.price|floatformat:"2" }}</div>
-                    <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                    <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                    <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                        data-price="{{button.price}}" data-id="{{button.id}}"
+                        id="{{ button.description }}_button">{{ button.description }}</button>
                 </div>
             </div>
             {% endfor %}
@@ -115,16 +117,17 @@
         <div class="section" id="baskets_section">
             <h2>Baskets</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Baskets %}
+                {% for button in categorizedButtons.Baskets %}
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'basket.jpeg' %}" alt="basket" class="icon"> -->
-                        
-                        <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                        <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                        <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                            data-price="{{button.price}}" data-id="{{button.id}}"
+                            id="{{ button.description }}_button">{{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -135,15 +138,17 @@
         <div class="section" id="sandwiches_section">
             <h2>Sandwiches</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Sandwiches %}
+                {% for button in categorizedButtons.Sandwiches %}
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'sandwich.jpeg' %}" alt="sandwich" class="icon"> -->
-                        <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                        <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                        <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                            data-price="{{button.price}}" data-id="{{button.id}}"
+                            id="{{ button.description }}_button">{{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -152,16 +157,18 @@
         <div class="section" id="shakes_section">
             <h2>Shakes</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Shakes %}
+                {% for button in categorizedButtons.Shakes %}
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'shake.jpeg' %}" alt="shake" class="icon"> -->
-                        <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                        <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
 
                     </div>
                     <div class="details-section">
-                        <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                        <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                            data-price="{{button.price}}" data-id="{{button.id}}"
+                            id="{{ button.description }}_button">{{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -171,17 +178,18 @@
         <div class="section" id="beverages_section">
             <h2>Beverages</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Beverages %}
+                {% for button in categorizedButtons.Beverages %}
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'beverage.jpeg' %}" alt="Beverages" class="icon"> -->
-                        
-                        <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                        <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
 
                     </div>
                     <div class="details-section">
-                        <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                        <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                            data-price="{{button.price}}" data-id="{{button.id}}"
+                            id="{{ button.description }}_button">{{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -191,15 +199,17 @@
         <div class="section" id="sides_section">
             <h2>Sides</h2>
             <div class="box-container">
-                {% for button in categorized_buttons.Sides %}
+                {% for button in categorizedButtons.Sides %}
                 <div class="box">
                     <div class="image-section">
                         <!-- <img src="{% static 'sides.jpeg' %}" alt="Sides" class="icon"> -->
-                        <!-- <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon"> -->
+                        <img src="{% static button.description %}.jpeg" alt="{{ button.description }}" class="icon">
                     </div>
                     <div class="details-section">
-                        <div class="price">${{ button.price|floatformat:"2" }}</div>
-                        <button class="menuButton" id="{{ button.description }}_button">{{ button.description }}</button>
+                        <div class="price readable" >${{ button.price|floatformat:"2" }}</div>
+                        <button class="menuButton readable" aria-label="Click to add a {{button.description}} to the order"
+                            data-price="{{button.price}}" data-id="{{button.id}}"
+                            id="{{ button.description }}_button">{{ button.description }}</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -221,8 +231,8 @@
                 </p>
             </div>
             <div class="logo-column">
-                <a href="orders.html">
-                    <img src="{% static 'rev.png' %}" alt="Rev's American Grill Logo" class="logo">
+                <a href="">
+                    <a href="{% url 'Revs-Login-Screen' %}"><img src="{% static 'rev.png' %}" alt="Rev's American Grill Logo" class="logo"></a>
                 </a>
             </div>
             
@@ -307,7 +317,8 @@
         $('.menuButton').click(function() {
             var description = $(this).attr('id').replace('_button', ''); // Extract description from button id
             var imageUrl = $(this).closest('.box').find('img').attr('src'); // Extract image source
-            var price = parseFloat($(this).closest('.details-section').find('.price').text().replace('$', '')); // Get price from the button's parent container
+            var price = $(this).data('price'); // Get price from the button's parent container
+            var id = $(this).data('id');
 
             // Check if item already exists in the cart
             var existingItem = $('.sidebar').find('.sidebar-item[data-description="' + description + '"]');
@@ -322,11 +333,14 @@
                 var menuItemHtml = '<div class="sidebar-item" data-description="' + description + '">' +
                                         '<img src="' + imageUrl + '" alt="' + description + '" class="sidebar-icon">' +
                                         '<span>' + description + '</span>' +
-                                        '<button class="decrease-quantity">-</button>' +
+                                        '<button class="decrease-quantity" ' +
+                                        'aria-label="Click to decrease the ' + description + ' count by one">-</button>' +
                                         '<span class="quantity">1</span>' +
-                                        '<button class="increase-quantity">+</button>' +
-                                        '<span class="price">$' + price.toFixed(2) + '</span>' +
-                                        '<button class="remove-item">Remove</button>' +
+                                        '<button class="increase-quantity" ' +
+                                        'aria-label="Click to increase the ' + description + 'count by one">+</button>' +
+                                        '<span class="price">$' + Number(price).toFixed(2) + '</span>' +
+                                        '<button class="remove-item" '+
+                                        'aria-label="Click to remove the ' + description + ' from the order">Remove</button>' +
                                 '</div>';
                 $('.sidebar').append(menuItemHtml);
             }
@@ -336,16 +350,15 @@
                 type: "POST",
                 url: "{% url 'addItem' %}", // URL for adding to cart
                 data: {
-                    'description': description,
+                    'id': id,
                     'price': price,
-                    'Quantity': Quantity,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function(response) {
                     // Update cart count
-                    $('#cart-count').text(response.cart_count);
+                    $('#cart-count').text(response.cartCount);
                     // Update current price
-                    $('#total-price').text(response.total_price.toFixed(2));
+                    $('#total-price').text(response.totalPrice.toFixed(2));
                 },
                 error: function(xhr, status, error) {
                     // Handle errors if any
@@ -409,7 +422,7 @@ $(document).on('click', '.decrease-quantity', function() {
         // If quantity is more than 1, decrease quantity and update price
         existingItem.find('.quantity').text(currentQuantity - 1);
         var price = parseFloat(existingItem.find('.price').text().replace('$', ''));
-        var totalPrice = price * (currentQuantity - 1);
+        var totalPrice = price + (currentQuantity - 1);
         existingItem.find('.price').text('$' + totalPrice.toFixed(2));
         
         // Optionally, you can also send an AJAX request to update the item quantity in the backend
@@ -424,7 +437,7 @@ $(document).on('click', '.increase-quantity', function() {
     // Increase quantity and update price
     existingItem.find('.quantity').text(currentQuantity + 1);
     var price = parseFloat(existingItem.find('.price').text().replace('$', ''));
-    var totalPrice = price * (currentQuantity + 1);
+    var totalPrice = price + (currentQuantity + 1);
     existingItem.find('.price').text('$' + totalPrice.toFixed(2));
     
     // Optionally, you can also send an AJAX request to update the item quantity in the backend
@@ -453,8 +466,7 @@ $(document).on('click', '.increase-quantity', function() {
         }
     });
 </script>
-
-
+    
     
 </body>
 </html>
