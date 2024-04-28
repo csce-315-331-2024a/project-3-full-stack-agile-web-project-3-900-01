@@ -47,10 +47,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'login.apps.LoginConfig',
     'manager.apps.ManagerConfig',
-    'menu.apps.MenuConfig',
     'orders.apps.OrdersConfig',
     'menuboard.apps.MenuboardConfig',
     'cashier.apps.CashierConfig',
+    'administrator.apps.AdministratorConfig',
 ]
 
 SITE_ID = 1
@@ -171,6 +171,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'Revs-Employee-Screen'
+LOGIN_REDIRECT_URL = 'employee-redirect'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'login.adapters.MySocialAccountAdapter'
