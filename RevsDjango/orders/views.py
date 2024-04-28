@@ -118,6 +118,34 @@ def addItem(request):
     return JsonResponse({'error': 'failed'}, status=400)
 
 
+# Remove items from the cart
+def removeItem(request):
+    if request.method == 'POST':
+        price = float(request.POST.get('price'))
+        buttonId = request.POST.get('id')
+
+        # Retrieve the cart from the session, add new price to total
+        cart = request.session.get('cart')
+        cart['totalPrice'] -= price
+        totalPrice = cart['totalPrice']
+
+        # Adds to cart is the item isn't in cart, if it is, adds to the count
+        for menuItem in cart['menuItems'][:]:
+            if menuItem['id'] == int(buttonId):
+                menuItem['count'] -= 1
+                if menuItem['count'] < 1:
+                    cart['menuItems'].remove(menuItem['id'])
+                break
+
+        request.session['cart'] = cart
+        cartCount = len(cart['menuItems'])
+
+        return JsonResponse({'cartItems': cart['menuItems'], 'cartCount': cartCount,
+                             'totalPrice': totalPrice})
+    
+    return JsonResponse({'error': 'failed'}, status=400)
+
+
 # Redirects to the transaction
 def checkout(request):
     if request.method == 'POST':
