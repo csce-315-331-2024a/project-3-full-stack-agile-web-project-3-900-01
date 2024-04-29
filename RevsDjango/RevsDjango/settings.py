@@ -170,6 +170,7 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
+            'prompt': 'select_account',
         },
         'OAUTH_PKCE_ENABLED': True,
     }
@@ -179,5 +180,8 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 LOGIN_REDIRECT_URL = 'employee-redirect'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
 SOCIALACCOUNT_ADAPTER = 'login.adapters.MySocialAccountAdapter'
-
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
