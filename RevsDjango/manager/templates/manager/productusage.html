@@ -59,6 +59,7 @@
             <button type="submit" class="btn btn-success">Submit</button>
         </form>
 
+        <img src="data:image/png;base64,{{ graph }}" alt="Bar Graph">
         <!-- Display the product usage report -->
         <form id="sortForm" method="get" action="{% url 'sortTable' %}">
             <table class="table table-bordered">

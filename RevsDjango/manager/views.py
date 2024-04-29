@@ -7,6 +7,9 @@ from datetime import datetime, timedelta, date
 from django.contrib import messages
 import os
 from django.conf import settings
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 
 def manager(request):
     # If we're adding an item, update the database
@@ -210,10 +213,11 @@ def productusage(request):
         endingDate = request.POST.get('endDate')
 
     productUsageReport = getProductUsageReport(request, startingDate, endingDate)
+    graph = productUsageGraph(productUsageReport)
     if 'currentField' in request.session:
         del request.session['currentField']
 
-    context = {'report': productUsageReport}
+    context = {'report': productUsageReport, 'graph': graph}
 
     return render(request, 'manager/productusage.html', context)
 
@@ -555,3 +559,28 @@ def sortTable(request):
     }
 
     return render(request, f'manager/{tableName}.html', context)
+
+
+### GRAPHS ###
+def productUsageGraph(data):
+    items = []
+    count = []
+    for dict in data:
+        items.append(dict["description"])
+        count.append(dict["quantity"])
+    
+    plt.bar(items, count)
+    plt.xlabel('Item')
+    plt.ylabel('Quantity')
+    plt.title('Product Usage')
+
+    # Save the plot to a bytes object
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+
+    # Encode the bytes object to base64
+    image_png = buffer.getvalue()
+    buffer.close()
+    graph = base64.b64encode(image_png).decode('utf-8')
+    return graph
