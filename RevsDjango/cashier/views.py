@@ -10,8 +10,40 @@ from collections import defaultdict
 import time
 from .models import MenuItems, Inventory, Employees, Orders, Inventory, OrderBreakout
 
+from google.cloud import texttospeech
+import os
+import logging
+
+
+# Set up Google Cloud credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcp_service_account.json"
+
+# Allows us to convert HTML text in the frontend to speech
+def cashier_text_to_speech(request):
+    client = texttospeech.TextToSpeechClient()
+    text = request.GET.get('text', 'Default text')
+
+    synthesis_input = texttospeech.SynthesisInput(text=text)
+
+    # Build the voice request with the cheaper standard voice
+    voice = texttospeech.VoiceSelectionParams(
+        language_code="en-US",
+        name='en-US-Standard-A'
+    )
+
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    response = client.synthesize_speech(
+        input=synthesis_input, voice=voice, audio_config=audio_config
+    )
+
+    # Return binary for html to process
+    return HttpResponse(response.audio_content, content_type='audio/mp3')
+
 # Initializes all the menu items buttons
-def orders(request):
+def revs_cashier_screen(request):
     with connection.cursor() as cursor:
         if 'cart' in request.session:
             del request.session['cart']
@@ -75,7 +107,7 @@ def orders(request):
 #         return JsonResponse({'cart_count': len(cart['ids']), 'total_price': totalPrice})
     
 #     return JsonResponse({'error': 'failed'}, status=400)
-def addItem(request):
+def cashier_add_item(request):
     if request.method == 'POST':
         price = float(request.POST.get('price'))
         description = request.POST.get('description')
@@ -125,7 +157,7 @@ def addItem(request):
 #         messages.success(request, 'Success')
 #         return redirect('Revs-Order-Screen')
 
-def checkout(request):
+def cashier_checkout(request):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
         total_price = sum(cart.values())
@@ -133,7 +165,7 @@ def checkout(request):
         request.session['total_price'] = total_price
         return redirect('transaction') 
 
-def transaction_view(request):
+def cashier_transaction_view(request):
     if request.method == 'POST':
         # Retrieve form data
         total_price = request.POST.get('total_price')
@@ -160,13 +192,13 @@ def transaction_view(request):
     total = round(total_price + tax, 2)  
     total_price_rounded = round(total_price, 2)  
     context = {'cart_items': cart_items, 'total_price': total_price_rounded, 'tax': tax, 'total': total}
-    return render(request, 'cashier/transaction.html', context)
+    return render(request, 'cashier/cashiertransaction.html', context)
 
 
-def order_return(request):
+def cashier_orders(request):
     return render(request, 'cashier/cashier.html')
 
-def get_cart_items(request):
+def cashier_get_cart_items(request):
     # Retrieve cart items from the session
     cart_items = request.session.get('cart', {})
    
@@ -176,7 +208,7 @@ def get_cart_items(request):
     # Return the cart items as JSON response
     return JsonResponse(cart_items_list, safe=False)
 
-def login_view(request):
+def cashier_login_view(request):
     # Your login logic here
     return render(request, 'login/login.html')
 
@@ -236,7 +268,7 @@ def orderStatus(request):
                        for currentItem in dataSorted]
     return render(request, 'cashier/kitchen.html', dataReport)
 
-def cancelOrder(request, orderId):
+def cancel_order(request, orderId):
     if request.method == 'POST':
         orderId = request.POST.get('id')
     with connection.cursor() as cursor:
@@ -244,14 +276,14 @@ def cancelOrder(request, orderId):
     return JsonResponse({'success': True})
 
 
-def CompleteOrder(request):
+def complete_order(request):
     if request.method == 'POST':
         orderId = request.POST.get('id')
     with connection.cursor() as cursor:
         cursor.execute("UPDATE orders SET status = %s WHERE id = %s", ['completed', orderId])
     return JsonResponse({'success': True})
 
-def orderManagement(request):
+def revs_order_management(request):
     context = {}
     if request.method == 'POST':
         if 'submit_date' in request.POST:
@@ -276,20 +308,20 @@ def orderManagement(request):
         # Get menu items associated with each order
         context['orders'] = orders
         for order in orders:
-            order.items = getOrderItems(order.id)
+            order.items = get_order_items(order.id)
     else:
         orders = Orders.objects.filter(status='In Progress')
          # Get menu items associated with each order
         context['orders'] = orders
         for order in orders:
-            order.items = getOrderItems(order.id)
+            order.items = get_order_items(order.id)
 
     return render(request, 'cashier/ordermanagement.html', context)
 
 '''
 This function will get all the menu items associated with a specific order id
 '''
-def getOrderItems(order_id):
+def get_order_items(order_id):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT mi.description
@@ -300,3 +332,53 @@ def getOrderItems(order_id):
         """, [order_id])
         items = cursor.fetchall()
     return [item[0] for item in items]
+
+
+# Remove items from the cart
+def cashier_remove_item(request):
+    if request.method == 'POST':
+        price = float(request.POST.get('price'))
+        buttonId = request.POST.get('id')
+        # Retrieve the cart from the session, add new price to total
+        cart = request.session.get('cart')
+        cart['totalPrice'] -= price
+        totalPrice = cart['totalPrice']
+        # Adds to cart is the item isn't in cart, if it is, adds to the count
+        for menuItem in cart['menuItems'][:]:
+            if menuItem['id'] == int(buttonId):
+                menuItem['count'] -= 1
+                if menuItem['count'] < 1:
+                    cart['menuItems'].remove(menuItem)
+                break
+        request.session['cart'] = cart
+        cartCount = len(cart['menuItems'])
+        return JsonResponse({'cartItems': cart['menuItems'], 'cartCount': cartCount,
+                             'totalPrice': totalPrice})
+    
+    return JsonResponse({'error': 'failed'}, status=400)
+
+
+# Remove all of a specific item
+def cashier_remove_all_items(request):
+    if request.method == 'POST':
+        price = float(request.POST.get('price'))
+        buttonId = request.POST.get('id')
+
+        # Removes item from cart
+        cart = request.session.get('cart')
+        for menuItem in cart['menuItems'][:]:
+            if menuItem['id'] == int(buttonId):
+                count = menuItem['count']
+                cart['totalPrice'] -= count * price
+                cart['menuItems'].remove(menuItem)
+                break
+        
+        request.session['cart'] = cart
+        totalPrice = cart['totalPrice']
+
+        cartCount = len(cart['menuItems'])
+
+        return JsonResponse({'cartItems': cart['menuItems'], 'cartCount': cartCount,
+                             'totalPrice': totalPrice})
+    
+    return JsonResponse({'error': 'failed'}, status=400)

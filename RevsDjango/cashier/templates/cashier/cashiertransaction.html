@@ -106,7 +106,7 @@
                 var total_price = parseFloat('{{ total_price }}');
                 $.ajax({
                     type: "POST",
-                    url: "{% url 'transaction' %}",
+                    url: "{% url 'cashier_transaction_view' %}",
                     data: {
                         total_price: total_price,
                         csrfmiddlewaretoken: '{{ csrf_token }}'
