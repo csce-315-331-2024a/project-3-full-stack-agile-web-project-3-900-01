@@ -175,3 +175,4 @@ LOGIN_REDIRECT_URL = 'employee-redirect'
 LOGOUT_REDIRECT_URL = 'Revs-Login-Screen'
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_ADAPTER = 'login.adapters.MySocialAccountAdapter'
+
