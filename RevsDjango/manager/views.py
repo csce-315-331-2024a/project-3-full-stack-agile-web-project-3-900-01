@@ -19,13 +19,14 @@ def manager(request):
         description = request.POST.get('description')
         category = request.POST.get('category')
         times_ordered = request.POST.get('times_ordered')
-        startDate = request.POST.get('startDate')
-        endDate = request.POST.get('endDate')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
         image = request.FILES.get('image')
 
         # validates the dates when adding menu items
-        if endDate < startDate:
+        if end_date < start_date:
             messages.error(request, "End date must be after start date")
+
             return redirect('Revs-Manager-Screen')
 
         # Get an available ID for a new menu_item
@@ -38,8 +39,8 @@ def manager(request):
 
         # Insert into the database
         with connection.cursor() as cursor:
-            sql = "INSERT INTO menu_items (id, price, description, category, times_ordered, startDate, endDate) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, [next_id, price, description, category, times_ordered, startDate, endDate])
+            sql = "INSERT INTO menu_items (id, price, description, category, times_ordered, start_date, end_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, [next_id, price, description, category, times_ordered, start_date, end_date])
 
         if image:
             # Write to the orders static images in orders
